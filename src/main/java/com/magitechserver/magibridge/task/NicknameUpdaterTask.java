@@ -41,6 +41,9 @@ public class NicknameUpdaterTask implements Consumer<Task> {
 
     String nickname = replace.apply(FormatType.NICKNAME_FORMAT.get());
 
+    if (guild.getSelfMember().getEffectiveName().equals(nickname))
+      return;
+
     guild.getSelfMember().modifyNickname(nickname).queue();
   }
 }
