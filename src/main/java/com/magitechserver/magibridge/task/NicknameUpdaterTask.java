@@ -5,6 +5,7 @@ import com.magitechserver.magibridge.config.FormatType;
 import com.magitechserver.magibridge.config.categories.ConfigCategory;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
@@ -29,6 +30,15 @@ public class NicknameUpdaterTask implements Consumer<Task> {
     if (guild == null) {
       logger.error("The nickname-updater-guild-id is invalid, replace it with a valid one and restart the server!");
       return;
+    }
+
+    String voiceChannelId = config.CHANNELS.NICKNAME_INDICATOR_VOICE_ID;
+    if (!voiceChannelId.isEmpty()) {
+      VoiceChannel voiceChannel = jda.getVoiceChannelById(voiceChannelId);
+
+      if (voiceChannel != null && !(guild.getAudioManager().isConnected())) {
+        guild.getAudioManager().openAudioConnection(voiceChannel);
+      }
     }
 
     Function<String, String> replace = s ->

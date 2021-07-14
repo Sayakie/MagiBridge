@@ -63,6 +63,9 @@ public class Channel {
     @Setting(value = "nickname-updater-guild-id", comment = "ID of the channel that the nickname updater should update. If blank, it will be disabled.")
     public String NICKNAME_UPDATER_GUILD_ID = "";
 
+    @Setting(value = "nickname-indicator-voicechannel-id", comment = "ID of the voice channel that the nickname indicator should be connect. IF blank, it will be disabled.")
+    public String NICKNAME_INDICATOR_VOICE_ID = "";
+
     @Setting(value = "topic-updater-channel", comment = "ID of the channel that the topic updater should update. If blank, main-discord-channel will be used")
     public String TOPIC_UPDATER_CHANNEL = "";
 
