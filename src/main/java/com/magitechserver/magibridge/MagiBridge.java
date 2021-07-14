@@ -207,6 +207,7 @@ public class MagiBridge {
                         GatewayIntent.GUILD_MEMBERS,
                         GatewayIntent.GUILD_EMOJIS,
                         GatewayIntent.GUILD_MESSAGES,
+                        GatewayIntent.GUILD_VOICE_STATES,
                         GatewayIntent.DIRECT_MESSAGES
                 )
                 .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
