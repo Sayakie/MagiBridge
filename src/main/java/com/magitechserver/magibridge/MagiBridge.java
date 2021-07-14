@@ -11,6 +11,8 @@ import com.magitechserver.magibridge.discord.DiscordMessageBuilder;
 import com.magitechserver.magibridge.discord.MessageListener;
 import com.magitechserver.magibridge.listeners.UChatListeners;
 import com.magitechserver.magibridge.listeners.VanillaListeners;
+import com.magitechserver.magibridge.task.NicknameUpdaterTask;
+import com.magitechserver.magibridge.task.TopicUpdaterTask;
 import com.magitechserver.magibridge.util.ConsoleHandler;
 import com.magitechserver.magibridge.util.Utils;
 import net.dv8tion.jda.api.JDA;
@@ -56,7 +58,7 @@ import java.util.function.Function;
 @Plugin(id = "magibridge",
         name = "MagiBridge",
         description = "A utility Discord <-> Minecraft chat relay plugin",
-        authors = {"Eufranio"},
+        authors = {"Eufranio", "Sayakie"},
         dependencies = {
                 @Dependency(id = "ultimatechat", optional = true),
                 @Dependency(id = "nucleus", optional = true),
@@ -74,7 +76,8 @@ public class MagiBridge {
     private Logger logger;
 
     JDA jda;
-    Task updaterTask;
+    Task nickUpdaterTask;
+    Task topicUpdaterTask;
     ConsoleHandler consoleHandler;
     ConfigCategory config;
     Executor executor;
@@ -93,6 +96,17 @@ public class MagiBridge {
                     .format(FormatType.SERVER_STARTING)
                     .useWebhook(false)
                     .send();
+
+            CommandSpec reloadCommand = CommandSpec.builder()
+                .description(Text.of("Reloads MagiBridge."))
+                .permission("magibridge.admin.reload")
+                .executor((src, args) -> {
+                    this.reload();
+
+                    src.sendMessage(Text.of(TextColors.GREEN, "Magibridge is reloaded successfully!"));
+                    return CommandResult.success();
+                })
+                .build();
 
             CommandSpec cs = CommandSpec.builder()
                     .description(Text.of("Broadcasts a message to the specified Discord channel name"))
@@ -122,6 +136,8 @@ public class MagiBridge {
                         return CommandResult.success();
                     })
                     .build();
+
+            Sponge.getCommandManager().register(MagiBridge.getInstance(), reloadCommand, "magibridgereload");
             Sponge.getCommandManager().register(MagiBridge.getInstance(), cs, "mbroadcast", "mb");
 
             if (config.CORE.ENABLE_CONSOLE_LOGGING && !config.CHANNELS.CONSOLE_CHANNEL.isEmpty()) {
@@ -152,8 +168,10 @@ public class MagiBridge {
                     .useWebhook(false)
                     .send();
 
-            if (this.updaterTask != null)
-                this.updaterTask.cancel();
+            if (this.nickUpdaterTask != null)
+                this.nickUpdaterTask.cancel();
+            if (this.topicUpdaterTask != null)
+                this.topicUpdaterTask.cancel();
 
             //TextChannel channel = jda.getTextChannelById(config.CHANNELS.MAIN_CHANNEL);
             //if (channel != null)
@@ -173,12 +191,7 @@ public class MagiBridge {
 
     @Listener
     public void reload(GameReloadEvent event) {
-        this.stop().thenCompose(v -> this.init())
-                .thenRun(() -> logger.info("Plugin reloaded successfully!"))
-                .exceptionally(throwable -> {
-                    logger.error("Error reloading MagiBridge: ", throwable.getCause());
-                    return null;
-                });
+        this.reload();
     }
 
     CompletableFuture<Void> init() {
@@ -196,7 +209,7 @@ public class MagiBridge {
                         GatewayIntent.GUILD_MESSAGES,
                         GatewayIntent.DIRECT_MESSAGES
                 )
-                .disableCache(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE, CacheFlag.CLIENT_STATUS)
+                .disableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
                 .build()
                 .awaitReady();
                 jda.addEventListener(new MessageListener());
@@ -224,50 +237,26 @@ public class MagiBridge {
             }
         }, executor).thenRun(() -> {
             this.registerListeners();
-            if (config.CORE.ENABLE_UPDATER && jda.getStatus() == JDA.Status.CONNECTED) {
-                this.updaterTask = Task.builder()
-                        .interval(Math.max(config.CORE.UPDATER_INTERVAL, 10), TimeUnit.MINUTES)
-                        .execute(() -> {
-                            String channelId = config.CHANNELS.TOPIC_UPDATER_CHANNEL;
-                            if (channelId.isEmpty())
-                                channelId = config.CHANNELS.MAIN_CHANNEL;
-
-                            TextChannel channel = jda.getTextChannelById(channelId);
-                            if (channel == null) {
-                                logger.error("The main-discord-channel is INVALID, replace it with a valid one and restart the server!");
-                                return;
-                            }
-
-                            Function<String, String> replace = s ->
-                                    s.replace("%players%", "" + Sponge.getServer().getOnlinePlayers().stream().filter(p -> !p.get(Keys.VANISH).orElse(false)).count())
-                                            .replace("%maxplayers%", Integer.valueOf(Sponge.getServer().getMaxPlayers()).toString())
-                                            .replace("%tps%", Long.valueOf(Math.round(Sponge.getServer().getTicksPerSecond())).toString())
-                                            .replace("%daysonline%", Long.valueOf(ManagementFactory.getRuntimeMXBean().getUptime() / (24 * 60 * 60 * 1000)).toString())
-                                            .replace("%hoursonline%", Long.valueOf((ManagementFactory.getRuntimeMXBean().getUptime() / (60 * 60 * 1000)) % 24).toString())
-                                            .replace("%minutesonline%", Long.valueOf((ManagementFactory.getRuntimeMXBean().getUptime() / (60 * 1000)) % 60).toString());
-
-                            String topic = replace.apply(FormatType.TOPIC_FORMAT.get());
-
-                            channel.getManager().setTopic(topic).queue();
-
-                            if (!config.MESSAGES.BOT_GAME_STATUS.isEmpty()) {
-                                String msg = replace.apply(config.MESSAGES.BOT_GAME_STATUS);
-
-                                Activity activity = jda.getPresence().getActivity();
-                                if (activity != null && activity.getName().equals(msg))
-                                    return;
-
-                                jda.getPresence().setActivity(Activity.playing(msg));
-                            }
-                        })
+            if (config.CORE.ENABLE_NICKNAME_UPDATER && jda.getStatus() == JDA.Status.CONNECTED) {
+                this.nickUpdaterTask = Task.builder()
+                    .interval(Math.max(config.CORE.NICKNAME_UPDATER_INTERVAL, 1), TimeUnit.SECONDS)
+                    .execute(new NicknameUpdaterTask())
+                    .submit(this);
+            }
+            if (config.CORE.ENABLE_TOPIC_UPDATER && jda.getStatus() == JDA.Status.CONNECTED) {
+                this.topicUpdaterTask = Task.builder()
+                        .interval(Math.max(config.CORE.TOPIC_UPDATER_INTERVAL, 10), TimeUnit.MINUTES)
+                        .execute(new TopicUpdaterTask())
                         .submit(this);
             }
         });
     }
 
     CompletableFuture<Void> stop() {
-        if (this.updaterTask != null)
-            this.updaterTask.cancel();
+        if (this.nickUpdaterTask != null)
+            this.nickUpdaterTask.cancel();
+        if (this.topicUpdaterTask != null)
+            this.topicUpdaterTask.cancel();
 
         // Unregistering listeners
         Sponge.getEventManager().unregisterPluginListeners(this);
@@ -284,6 +273,15 @@ public class MagiBridge {
             logger.error("Error stopping MagiBridge: ", throwable.getCause());
             return null;
         });
+    }
+
+    public void reload() {
+        this.stop().thenCompose(v -> this.init())
+            .thenRun(() -> logger.info("Plugin reloaded successfully!"))
+            .exceptionally(throwable -> {
+                logger.error("Error reloading MagiBridge: ", throwable.getCause());
+                return null;
+            });
     }
 
     private void registerListeners() {

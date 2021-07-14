@@ -27,7 +27,9 @@ public class FormatType {
 
     public static FormatType NEW_PLAYERS_MESSAGE = new FormatType(() -> MagiBridge.getInstance().getConfig().MESSAGES.NEW_PLAYERS_MESSAGE);
 
-    public static FormatType TOPIC_FORMAT = new FormatType(() -> MagiBridge.getInstance().getConfig().MESSAGES.TOPIC_MESSAGE);
+    public static FormatType NICKNAME_FORMAT = new FormatType(() -> MagiBridge.getInstance().getConfig().MESSAGES.TOPIC_MESSAGE);
+
+    public static FormatType TOPIC_FORMAT = new FormatType(() -> MagiBridge.getInstance().getConfig().MESSAGES.GUILD_NICKNAME);
 
     public static FormatType OFFLINE_TOPIC_FORMAT = new FormatType(() -> MagiBridge.getInstance().getConfig().MESSAGES.OFFLINE_TOPIC);
 

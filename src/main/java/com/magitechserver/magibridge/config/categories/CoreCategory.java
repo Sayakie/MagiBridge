@@ -22,10 +22,14 @@ public class CoreCategory {
     @Setting(value = "cut-messages", comment = "Set to false if MagiBridge should NOT cut messages coming from Discord with more than\n" +
             "120 characters. This can turn the chat ugly if someone sends a big message")
     public boolean CUT_MESSAGES = false;
+    @Setting(value = "nickname-updater-interval", comment = "Nickname Updater interval in seconds, minimum is 1.")
+    public int NICKNAME_UPDATER_INTERVAL = 1;
+    @Setting(value = "enable-nickname-updater", comment = "Should MagiBridge enable the Nickname Updater.")
+    public boolean ENABLE_NICKNAME_UPDATER = false;
     @Setting(value = "topic-updater-interval", comment = "Topic Updater interval in minutes, minimum is 5. If you're having rate limit errors, set this to 10 or higher!")
-    public int UPDATER_INTERVAL = 10;
+    public int TOPIC_UPDATER_INTERVAL = 10;
     @Setting(value = "enable-topic-updater", comment = "Should MagiBridge enable the Topic Updater, updating the topic of the main Discord channel?")
-    public boolean ENABLE_UPDATER = true;
+    public boolean ENABLE_TOPIC_UPDATER = true;
     @Setting(value = "enable-console-logging", comment = "Should MagiBridge send console messages to Discord? You must set the console-discord-channel for this to work!")
     public boolean ENABLE_CONSOLE_LOGGING = false;
 

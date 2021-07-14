@@ -11,9 +11,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.channel.MessageChannel;
 import org.spongepowered.api.util.Tristate;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Created by Frani on 10/07/2017.
@@ -52,9 +51,10 @@ public class BridgeCommandSource implements CommandSource {
 
     @Override
     public void sendMessages(Iterable<Text> messages) {
-        for (Text message : messages) {
-            this.sendMessage(message);
-        }
+        List<Text> messageList = new ArrayList<>();
+        messages.forEach(messageList::add);
+
+        this.sendMessage(messageList.stream().reduce(Text::joinWith).get());
     }
 
     @Override

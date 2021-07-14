@@ -46,6 +46,9 @@ public class Messages {
     public String PLAYER_QUIT = "**Bye, %player%!**";
     @Setting(value = "channel-topic-offline", comment = "Message that will be set in the main discord channel topic when the server goes offline")
     public String OFFLINE_TOPIC = "The server is currently offline!";
+    @Setting(value = "guild-nickname", comment = "Message that will be set nickname in the nickname updater guild every X seconds\n +" +
+        "Supports %tps%, %players%, %maxplayers%, %daysonline%, %hoursonline% and %minutesonline%")
+    public String GUILD_NICKNAME = "Server » %players% online";
     @Setting(value = "channel-topic-message", comment = "Message that will be set in the main discord channel topic every X seconds\n" +
             "Supports %tps%, %players%, %maxplayers%, %daysonline%, %hoursonline% and %minutesonline%")
     public String TOPIC_MESSAGE = "%players%/%maxplayers% players online | TPS: %tps% | Server online for %daysonline% days,  %hoursonline% hours and %minutesonline% minutes!";

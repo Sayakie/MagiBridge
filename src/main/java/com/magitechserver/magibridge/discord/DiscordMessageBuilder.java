@@ -11,6 +11,7 @@ import com.magitechserver.magibridge.util.Utils;
 import me.rojo8399.placeholderapi.PlaceholderService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.entity.living.player.Player;
@@ -175,15 +176,17 @@ public class DiscordMessageBuilder implements MessageBuilder {
         if (message == null)
             return;
 
+        String messageEscaped = MarkdownSanitizer.escape(message);
+
         TextChannel textChannel = MagiBridge.getInstance()
                 .getJDA()
                 .getTextChannelById(this.channel.replace("#", ""));
 
         if (this.deleteTime != -1) {
             if (this.queue)
-                textChannel.sendMessage(message).queue(m -> m.delete().queueAfter(this.deleteTime, TimeUnit.SECONDS));
+                textChannel.sendMessage(messageEscaped).queue(m -> m.delete().queueAfter(this.deleteTime, TimeUnit.SECONDS));
             else
-                textChannel.sendMessage(message).complete().delete().queueAfter(this.deleteTime, TimeUnit.SECONDS);
+                textChannel.sendMessage(messageEscaped).complete().delete().queueAfter(this.deleteTime, TimeUnit.SECONDS);
         } else if (this.useWebhook && MagiBridge.getInstance().getConfig().CHANNELS.USE_WEBHOOKS) {
             Player player = Sponge.getServer().getPlayer(placeholders.get("%player%")).get();
             String placeholderName = this.parsePlaceholders(FormatType.WEBHOOK_NAME, player);
@@ -191,14 +194,14 @@ public class DiscordMessageBuilder implements MessageBuilder {
             WebhookManager.sendWebhookMessage(
                     placeholderName,
                     player.getName(),
-                    message,
+                messageEscaped,
                     channel
             );
         } else {
             if (this.queue)
-                textChannel.sendMessage(message).queue();
+                textChannel.sendMessage(messageEscaped).queue();
             else
-                textChannel.sendMessage(message).complete();
+                textChannel.sendMessage(messageEscaped).complete();
         }
     }
 

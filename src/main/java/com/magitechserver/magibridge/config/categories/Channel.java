@@ -1,9 +1,11 @@
 package com.magitechserver.magibridge.config.categories;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import ninja.leaping.configurate.objectmapping.Setting;
 import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -14,6 +16,8 @@ public class Channel {
 
     @Setting(value="ignore-bots", comment = "Should MagiBridge ignore messages by other bots?")
     public boolean IGNORE_BOTS = true;
+    @Setting(value="allow-bot-list", comment = "A Collection of bot ID that could be accept by Magibridge.")
+    public HashSet<String> ALLOW_BOT_LIST = Sets.newHashSet();
     @Setting(value = "use-nucleus", comment = "Should MagiBridge use Nucleus? If this and use-ultimatechat are both false, MagiBridge will use the vanilla chat system")
     public boolean USE_NUCLEUS = true;
     @Setting(value = "use-ultimatechat", comment = "Should MagiBridge use UltimateChat instead? If this and use-nucleus are both false, MagiBridge will use the vanilla chat system")
@@ -55,6 +59,9 @@ public class Channel {
 
     @Setting(value = "welcome-messages-channel", comment = "ID of the channel that welcome messages (for players who have never joined before) will be sent to. If blank, main-discord-channel will be used")
     public String WELCOME_MESSAGES_CHANNEL = "";
+
+    @Setting(value = "nickname-updater-guild-id", comment = "ID of the channel that the nickname updater should update. If blank, it will be disabled.")
+    public String NICKNAME_UPDATER_GUILD_ID = "";
 
     @Setting(value = "topic-updater-channel", comment = "ID of the channel that the topic updater should update. If blank, main-discord-channel will be used")
     public String TOPIC_UPDATER_CHANNEL = "";

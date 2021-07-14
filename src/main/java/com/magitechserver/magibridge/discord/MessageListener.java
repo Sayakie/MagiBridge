@@ -31,8 +31,12 @@ public class MessageListener extends ListenerAdapter {
             return;
         }
 
-        if (e.getAuthor().isFake() || e.getAuthor().isBot()) {
-            if (config.CHANNELS.IGNORE_BOTS)
+        if (e.getAuthor().isBot()) {
+            if (
+                config.CHANNELS.IGNORE_BOTS ||
+                config.CHANNELS.ALLOW_BOT_LIST.isEmpty() ||
+                !(config.CHANNELS.ALLOW_BOT_LIST.contains(e.getAuthor().getId()))
+            )
                 return;
         }
 

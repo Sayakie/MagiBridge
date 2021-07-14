@@ -4,6 +4,7 @@ import com.magitechserver.magibridge.MagiBridge;
 import com.magitechserver.magibridge.common.NucleusBridge;
 import com.magitechserver.magibridge.config.categories.Channel;
 import com.magitechserver.magibridge.config.categories.ConfigCategory;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -25,6 +26,9 @@ import java.util.stream.Collectors;
  * Created by Frani on 01/05/2019.
  */
 public class Utils {
+    public static EmbedBuilder ofEmbedBuilder() {
+        return new EmbedBuilder();
+    }
 
     public static String getHighestGroup(Player player) {
         try {
