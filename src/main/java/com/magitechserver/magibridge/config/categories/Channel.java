@@ -69,6 +69,9 @@ public class Channel {
     @Setting(value = "topic-updater-channel", comment = "ID of the channel that the topic updater should update. If blank, main-discord-channel will be used")
     public String TOPIC_UPDATER_CHANNEL = "";
 
+    @Setting(value = "tps-channel", comment = "ID of the channel that the tps should show.")
+    public String TPS_CHANNEL = "";
+    
     @Setting(value = "start-messages-channel", comment = "ID of the channel that start/stop messages will be sent to. If blank, main-discord-channel will be used")
     public String START_MESSAGES_CHANNEL = "";
 

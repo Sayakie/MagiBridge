@@ -29,7 +29,9 @@ public class CoreCategory {
     @Setting(value = "topic-updater-interval", comment = "Topic Updater interval in minutes, minimum is 5. If you're having rate limit errors, set this to 10 or higher!")
     public int TOPIC_UPDATER_INTERVAL = 10;
     @Setting(value = "enable-topic-updater", comment = "Should MagiBridge enable the Topic Updater, updating the topic of the main Discord channel?")
-    public boolean ENABLE_TOPIC_UPDATER = true;
+    public boolean ENABLE_TOPIC_UPDATER = false;
+    @Setting(value = "enable-tps-collector", comment = "Should MagiBridge enable the tps collector?")
+    public boolean ENABLE_TPS_COLLECTOR = false;
     @Setting(value = "enable-console-logging", comment = "Should MagiBridge send console messages to Discord? You must set the console-discord-channel for this to work!")
     public boolean ENABLE_CONSOLE_LOGGING = false;
 
