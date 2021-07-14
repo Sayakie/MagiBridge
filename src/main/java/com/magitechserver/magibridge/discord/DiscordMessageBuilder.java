@@ -176,7 +176,8 @@ public class DiscordMessageBuilder implements MessageBuilder {
         if (message == null)
             return;
 
-        String messageEscaped = MarkdownSanitizer.escape(message);
+        if (this.formatType.equals(FormatType.DISCORD_TO_SERVER_FORMAT) || this.formatType.equals(FormatType.SERVER_TO_DISCORD_FORMAT))
+            message = MarkdownSanitizer.escape(message);
 
         TextChannel textChannel = MagiBridge.getInstance()
                 .getJDA()
@@ -184,24 +185,24 @@ public class DiscordMessageBuilder implements MessageBuilder {
 
         if (this.deleteTime != -1) {
             if (this.queue)
-                textChannel.sendMessage(messageEscaped).queue(m -> m.delete().queueAfter(this.deleteTime, TimeUnit.SECONDS));
+                textChannel.sendMessage(message).queue(m -> m.delete().queueAfter(this.deleteTime, TimeUnit.SECONDS));
             else
-                textChannel.sendMessage(messageEscaped).complete().delete().queueAfter(this.deleteTime, TimeUnit.SECONDS);
+                textChannel.sendMessage(message).complete().delete().queueAfter(this.deleteTime, TimeUnit.SECONDS);
         } else if (this.useWebhook && MagiBridge.getInstance().getConfig().CHANNELS.USE_WEBHOOKS) {
             Player player = Sponge.getServer().getPlayer(placeholders.get("%player%")).get();
             String placeholderName = this.parsePlaceholders(FormatType.WEBHOOK_NAME, player);
 
             WebhookManager.sendWebhookMessage(
-                    placeholderName,
-                    player.getName(),
-                messageEscaped,
-                    channel
+                placeholderName,
+                player.getName(),
+                message,
+                channel
             );
         } else {
             if (this.queue)
-                textChannel.sendMessage(messageEscaped).queue();
+                textChannel.sendMessage(message).queue();
             else
-                textChannel.sendMessage(messageEscaped).complete();
+                textChannel.sendMessage(message).complete();
         }
     }
 
