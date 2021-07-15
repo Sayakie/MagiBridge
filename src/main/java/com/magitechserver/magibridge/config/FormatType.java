@@ -33,6 +33,10 @@ public class FormatType {
 
     public static FormatType OFFLINE_TOPIC_FORMAT = new FormatType(() -> MagiBridge.getInstance().getConfig().MESSAGES.OFFLINE_TOPIC);
 
+    public static FormatType TPS_FORMAT = new FormatType(() -> MagiBridge.getInstance().getConfig().MESSAGES.TPS_FORMAT);
+
+    public static FormatType TPS_TITLE_FORMAT = new FormatType(() -> MagiBridge.getInstance().getConfig().MESSAGES.TPS_TITLE_FORMAT);
+
     public static FormatType JOIN_MESSAGE = new FormatType(() -> MagiBridge.getInstance().getConfig().MESSAGES.PLAYER_JOIN);
 
     public static FormatType QUIT_MESSAGE = new FormatType(() -> MagiBridge.getInstance().getConfig().MESSAGES.PLAYER_QUIT);

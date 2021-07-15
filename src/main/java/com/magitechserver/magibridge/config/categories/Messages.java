@@ -52,6 +52,12 @@ public class Messages {
     @Setting(value = "channel-topic-message", comment = "Message that will be set in the main discord channel topic every X seconds\n" +
             "Supports %tps%, %players%, %maxplayers%, %daysonline%, %hoursonline% and %minutesonline%")
     public String TOPIC_MESSAGE = "%players%/%maxplayers% players online | TPS: %tps% | Server online for %daysonline% days,  %hoursonline% hours and %minutesonline% minutes!";
+    @Setting(value = "tps-format", comment = "Format of the dateformat that will display in tps collector, if enabled\n" +
+        "Supports DATETIME format")
+    public String TPS_FORMAT = "HH:mm";
+    @Setting(value = "tps-format-title", comment = "Format of the dateformat that will display in tps collector, if enabled\n" +
+        "Supports DATETIME format")
+    public String TPS_TITLE_FORMAT = "MM-dd";
     @Setting(value = "death-message", comment = "Message that will be sent to the main discord channel when a player dies")
     public String DEATH_MESSAGE = "**Bad day for %player%: %deathmessage%**";
     @Setting(value = "advancement-message", comment = "Message that will be sent to the main discord channel when a player receives an advancement\n" +
